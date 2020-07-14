@@ -83,7 +83,9 @@ export default {
   },
   computed: {
     currentType() {
-      return this.$route.query.type || "3";
+      return this.$route.query.type == "9"
+        ? "1"
+        : this.$route.query.type || "3";
     },
     administratorId() {
       return this.$route.params.administratorId;
@@ -110,34 +112,34 @@ export default {
 .analyze
 	.type-box
 		ul
-			display flex;
-			width 100%;
-			height 50px;
-			border-top 1px solid #eee;
+			display flex
+			width 100%
+			height 50px
+			border-top 1px solid #eee
 			> li
-				width 50%;
-				height 50px;
-				line-height 50px;
-				text-align center;
-				display flex;
-				align-items center;
-				justify-content center;
+				width 50%
+				height 50px
+				line-height 50px
+				text-align center
+				display flex
+				align-items center
+				justify-content center
 				.icon
-					width 16px;
-					height 16px;
+					width 16px
+					height 16px
 				.icon-si
-					background url('..\..\..\assets\images\icon-si.png') no-repeat;
-					background-size contain;
+					background url('..\..\..\assets\images\icon-si.png') no-repeat
+					background-size contain
 				.icon-xing
-					background url('..\..\..\assets\images\icon-xing.png') no-repeat;
-					background-size contain;
+					background url('..\..\..\assets\images\icon-xing.png') no-repeat
+					background-size contain
 				.title
-					margin-left 5px;
+					margin-left 5px
 			.active-type
-				background linear-gradient(360deg, rgba(254, 254, 254, 1) 0%, rgba(243, 243, 243, 1) 100%);
-				border-bottom 1px solid #007BFF;
+				background linear-gradient(360deg, rgba(254, 254, 254, 1) 0%, rgba(243, 243, 243, 1) 100%)
+				border-bottom 1px solid #007BFF
 				.icon-si
-					background-image url('..\..\..\assets\images\icon-si-active.png');
+					background-image url('..\..\..\assets\images\icon-si-active.png')
 				.icon-xing
-					background-image url('..\..\..\assets\images\icon-xing-active.png');
+					background-image url('..\..\..\assets\images\icon-xing-active.png')
 </style>

@@ -18,10 +18,26 @@ const apis = {
   getCompanyHolder,
   getEnterpriseAtlas,
   getReportById,
-  showSingleActivityInformation,
+  previewShowSingleActivityInformation,
   getProtocolAndPolicy,
   eventBooking,
-  appShowAppActivityInformation
+  appShowAppActivityInformation,
+  appButtonIdentification,
+  iCanFlay,
+  investerAttentions,
+  mainInfo,
+  productList,
+  getOpinionInfo,
+  getHonestyInfo,
+  showCompanyAdvisers,
+  showCompanyAdvisersCount,
+  showCompanyFeature,
+  showCompanyAptitude,
+  showCompanyHonor,
+  showBranchOrganizations,
+  showBranchOrganizationCount,
+  getBrandIntroduction,
+  pagingHomepageActivityInformation
 };
 
 // 产品数量排名信息接口
@@ -100,8 +116,8 @@ function getReportById(params) {
 }
 
 // 活动单笔展示
-function showSingleActivityInformation(params) {
-  return get(urls.showSingleActivityInformation, params);
+function previewShowSingleActivityInformation(params) {
+  return get(urls.previewShowSingleActivityInformation, params);
 }
 function appShowAppActivityInformation(params) {
   return get(urls.appShowAppActivityInformation, params);
@@ -113,6 +129,71 @@ function getProtocolAndPolicy(params) {
 
 function eventBooking(params) {
   return post(urls.eventBooking, params);
+}
+
+function appButtonIdentification(params) {
+  return post(urls.appButtonIdentification, params);
+}
+
+function iCanFlay(params) {
+  return get(urls.iCanFlay, params);
+}
+
+// 投资者关注
+function investerAttentions(params) {
+  return get(urls.investerAttentions, params);
+}
+
+function mainInfo(params) {
+  return get(urls.mainInfo, params);
+}
+
+function productList(params) {
+  return get(urls.productList, params);
+}
+
+function getOpinionInfo(params) {
+  return get(urls.getOpinionInfo, params);
+}
+
+function getHonestyInfo(params) {
+  return get(urls.honestyInfo, params);
+}
+
+function showCompanyAdvisers(params) {
+  return get(urls.showCompanyAdvisers, params);
+}
+
+function showCompanyAdvisersCount(params) {
+  return get(urls.showCompanyAdvisersCount, params);
+}
+
+function showCompanyFeature(params) {
+  return get(urls.showCompanyFeature, params);
+}
+
+function showCompanyAptitude(params) {
+  return get(urls.showCompanyAptitude, params);
+}
+
+function showCompanyHonor(params) {
+  return get(urls.showCompanyHonor, params);
+}
+
+function showBranchOrganizations(params) {
+  return get(urls.showBranchOrganizations, params);
+}
+
+function showBranchOrganizationCount(params) {
+  return get(urls.showBranchOrganizationCount, params);
+}
+
+function getBrandIntroduction(params) {
+  return get(urls.getBrandIntroduction, params);
+}
+
+function pagingHomepageActivityInformation(params) {
+  return get(urls.pagingHomepageActivityInformation, params);
 }
 
 export default apis;

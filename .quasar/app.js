@@ -21,8 +21,6 @@ import createStore from 'app/src/store/index'
 
 import createRouter from 'app/src/router/index'
 
-
-
 export default function () {
   // create store and router instances
   

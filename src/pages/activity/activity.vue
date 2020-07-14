@@ -22,6 +22,10 @@
           >{{ info.activityArea }}{{ info.activityAddress }}</span
         >
       </div>
+      <div class="head-list">
+        <img :src="stopUrl" />
+        <span>报名截止日期：{{ info.closingDate }}</span>
+      </div>
     </section>
     <section class="discribe">
       <div class="title">活动简介</div>
@@ -31,41 +35,61 @@
       <div class="title">其他</div>
       <p class="offical">{{ info.officialStatement }}</p>
     </section>
-    <div class="order-btn" @click="order">立即预约</div>
+    <div class="order-btn" @click="isShare ? goRelatePage : order" v-if="false">
+      立即预约
+    </div>
     <order-dialog ref="orderDialog"></order-dialog>
+    <down-mask ref="downMask"></down-mask>
   </div>
 </template>
 
 <script>
+import DownMask from "./../../components/downMask/";
 import orderDialog from "./components/order-dialog";
 import apis from "../../api/common";
+import jumpInfoMixin from "../../mixins/jumpInfoMixin"; // 引入mixin文件
 
 export default {
+  mixins: [jumpInfoMixin],
+  components: {
+    orderDialog,
+    DownMask
+  },
   data() {
     return {
       timeUrl: require("./../../assets/images/icon-time.png"),
       locUrl: require("./../../assets/images/icon-location.png"),
+      stopUrl: require("./../../assets/images/icon-stop.png"),
       info: {},
-      id: ""
+      id: "",
+      isShare: false
     };
-  },
-  components: {
-    orderDialog
   },
   created() {
     const {
       $route: {
-        params: { id }
+        params: { id },
+        query: { type, share }
       }
     } = this;
     this.id = id;
+    this.type = type;
+    this.isShare = Number(share);
     this.appShowAppActivityInformation();
+  },
+  mounted() {
+    if (this.isShare) this.deleteShare();
   },
   methods: {
     async appShowAppActivityInformation() {
       const { id } = this;
       try {
-        const res = await apis.appShowAppActivityInformation({ id: id });
+        let res;
+        if (this.type === "prev") {
+          res = await apis.previewShowSingleActivityInformation({ id: id });
+        } else {
+          res = await apis.appShowAppActivityInformation({ id: id });
+        }
         const { code, data, msg } = res;
         if (code === 200) {
           this.info = data;
@@ -88,6 +112,14 @@ export default {
           lat
         }
       });
+    },
+    deleteShare() {
+      let cur = document.querySelector("div[class='mobLink-wrapper']");
+      cur.remove();
+    },
+    goRelatePage() {
+      if (this.isShare) this.$refs.downMask.show();
+      this.gengerateJumpInfo();
     }
   }
 };

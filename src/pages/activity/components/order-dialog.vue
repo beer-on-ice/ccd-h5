@@ -1,5 +1,5 @@
 <template>
-  <q-dialog v-model="isShow" :persistent="true">
+  <q-dialog v-model="isShow" no-backdrop-dismiss>
     <div class="dialog-content">
       <q-btn icon="close" flat v-close-popup class="close" />
       <div class="dialog-head">立即预约</div>
@@ -16,7 +16,7 @@
       </div>
       <div class="bottom-btn">
         <div @click="cancel">取消</div>
-        <div @click="submit">立即提交</div>
+        <div @click.stop="submit">立即提交</div>
       </div>
     </div>
   </q-dialog>
@@ -80,7 +80,7 @@ export default {
           data: { code, msg }
         } = res;
         if (code === 200) {
-          this.tip = "预约成功！";
+          this.tip = msg;
           clearTimeout(this.timer);
           this.timer = setTimeout(() => {
             this.hide();

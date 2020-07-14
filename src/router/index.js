@@ -1,8 +1,8 @@
 import Vue from "vue";
 import VueRouter from "vue-router";
 import routes from "./routes";
-import { setToken } from '../api/request'
-import store from "../store/index"
+import { setToken } from "../api/request";
+import store from "../store/index";
 
 Vue.use(VueRouter);
 /*

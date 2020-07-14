@@ -56,8 +56,10 @@
       font-weight bold
     &-tab
       display flex
-      justify-content space-between
+      justify-content flex-start
       align-items center
+      &.hasMore
+        justify-content space-around
       > li
         font-size 14px
         color #999999
@@ -114,3 +116,47 @@
       width 100%
       padding 0 4%
       margin-top 10px
+  .adBanner
+    display flex
+    height 49px
+    position fixed
+    bottom 0
+    left 0
+    right 0
+    .left
+      width 70%
+      background #222222
+      line-height 49px
+      img
+        width 78px
+        height 27px
+        margin 11px 0 0 28px
+    .right
+      width 30%
+      background #16308F
+      color #fff
+      text-align center
+      line-height 49px
+  .mask
+    position fixed
+    top 0
+    left 0
+    right 0
+    bottom 62px
+    background rgba(0, 0, 0, .5)
+    display flex
+    align-items center
+    justify-content center
+    img
+      position absolute
+      bottom 0
+      right 0
+      width 100%
+      height 100%
+    div
+      margin-top 50px
+      p
+        color #fff
+        text-align left
+        margin-bottom 5px
+        font-size 20px

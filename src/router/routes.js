@@ -15,6 +15,11 @@ const routes = [
     component: () => import("pages/counselor/counselor.vue")
   },
   {
+    path: "/business-auth/:id",
+    name: "business-auth",
+    component: () => import("pages/business-auth/index")
+  },
+  {
     path: "/activity/:id",
     name: "activity",
     component: () => import("pages/activity/activity.vue")
@@ -63,6 +68,26 @@ const routes = [
     path: "/pravice",
     name: "pravice",
     component: () => import("pages/pravice")
+  },
+  {
+    path: "/invite-auth/:companyUrl",
+    name: "invite-auth",
+    component: () => import("pages/invite-auth")
+  },
+  {
+    path: "/growingio/:userid",
+    name: "growingio",
+    component: () => import("pages/growingio")
+  },
+  {
+    path: "/delete-tip",
+    name: "delete-tip",
+    component: () => import("pages/delete-tip")
+  },
+  {
+    path: "/company-main/:id",
+    name: "company-main",
+    component: () => import("pages/company-main")
   }
 ];
 

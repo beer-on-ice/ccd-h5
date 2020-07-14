@@ -37,7 +37,9 @@ export default {
   computed: {
     // 1私募产品，2信托产品， 3混合模式，默认混合
     currentType() {
-      return this.$route.query.type || "3";
+      return this.$route.query.type == "9"
+        ? "1"
+        : this.$route.query.type || "3";
     },
     currentComponent() {
       if (this.currentTab === 1) {
@@ -51,7 +53,8 @@ export default {
       } else if (this.currentTab === 5) {
         return publicTime;
       }
-    },
+      return productData;
+    }
   },
   methods: {
     changeTab(tab) {

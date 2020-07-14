@@ -1,6 +1,6 @@
 // Configuration for your app
 // https://quasar.dev/quasar-cli/quasar-conf-js
-
+var path = require("path");
 module.exports = function(ctx) {
   const isOnline = false;
   return {
@@ -69,7 +69,7 @@ module.exports = function(ctx) {
         }
       }
     },
-
+    sourceMap: true,
     supportIE: true,
     /**
      *   构建配置
@@ -83,17 +83,20 @@ module.exports = function(ctx) {
       analyze: true, //使用webpack-bundle-analyzer显示构建包的分析。 如果用作对象，则表示webpack-bundle-analyzer配置对象。
       // extractCSS: false, //从Vue文件中提取CSS
       //preloadChunks: true,	//(v0.16+) 默认为“true”。 浏览器空闲时预加载块以改善用户以后导航到其他页面的体验。
-      //chainWebpack(chain): Function//(CLI v0.16.2+) 扩展Webpackk配置 由Quasar CLI生成。 等同于extendWebpack()，但改为使用webpack-chain。
+      // chainWebpack: config => {
+      //   config.entry = {
+      //     "babel-polyfill": "babel-polyfill"
+      //   };
+      // } //(CLI v0.16.2+) 扩展Webpackk配置 由Quasar CLI生成。 等同于extendWebpack()，但改为使用webpack-chain。
       extendWebpack(cfg) {
-        // cfg.module.rules.push({
-        //   enforce: "pre",
-        //   test: /\.(js|vue)$/,
-        //   loader: "eslint-loader",
-        //   exclude: /node_modules/,
-        //   options: {
-        //     formatter: require("eslint").CLIEngine.getFormatter("stylish")
-        //   }
-        // });
+        cfg.module.rules.push({
+          test: /\.js$/,
+          include: [
+            path.resolve(__dirname, "./node_modules/resize-detector"),
+            path.resolve(__dirname, "./src")
+          ],
+          loader: "babel-loader"
+        });
       } //由Quasar CLI生成的扩展Webpack配置。 等同于chainWebpack()，但您可以直接访问Webpack配置对象
     },
 

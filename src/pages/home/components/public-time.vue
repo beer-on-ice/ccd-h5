@@ -1,82 +1,102 @@
 <template>
-	<div class="analyze">
-		<div class="type-box" v-if="currentType === '3'">
-			<ul>
-				<li :class="{ 'active-type': activeType === 1 }"
-					@click="changeType(1)">
-					<div class="icon icon-si"></div>
-					<div class="title">私募产品</div>
-				</li>
-				<li :class="{ 'active-type': activeType === 2 }"
-					@click="changeType(2)">
-					<div class="icon icon-xing"></div>
-					<div class="title">信托产品</div>
-				</li>
-			</ul>
-		</div>
-		<div v-if="currentType === '3'">
-			<ul>
-				<transition-group appear enter-active-class="animated slideInRight" leave-active-class="animated slideOutLeft">
-					<li v-if="activeType === 1" key="1">
-						<public-chart :title="'私募产品发行时间'" :data="publicData.fund" :type="'fund'"></public-chart>
-					</li>
-					<li v-else key="2">
-						<public-chart :title="'信托产品发行时间'" :data="publicData.trust" :type="'trust'"></public-chart>
-					</li>
-				</transition-group>
-			</ul>
-		</div>
+  <div class="analyze">
+    <div class="type-box" v-if="currentType === '3'">
+      <ul>
+        <li :class="{ 'active-type': activeType === 1 }" @click="changeType(1)">
+          <div class="icon icon-si"></div>
+          <div class="title">私募产品</div>
+        </li>
+        <li :class="{ 'active-type': activeType === 2 }" @click="changeType(2)">
+          <div class="icon icon-xing"></div>
+          <div class="title">信托产品</div>
+        </li>
+      </ul>
+    </div>
+    <div v-if="currentType === '3'">
+      <ul>
+        <transition-group
+          appear
+          enter-active-class="animated slideInRight"
+          leave-active-class="animated slideOutLeft"
+        >
+          <li v-if="activeType === 1" key="1">
+            <public-chart
+              :title="'私募产品发行时间'"
+              :data="publicData.fund"
+              :type="'fund'"
+            ></public-chart>
+          </li>
+          <li v-else key="2">
+            <public-chart
+              :title="'信托产品发行时间'"
+              :data="publicData.trust"
+              :type="'trust'"
+            ></public-chart>
+          </li>
+        </transition-group>
+      </ul>
+    </div>
     <div v-else-if="currentType === '1'">
-			<public-chart :title="'私募产品发行时间'" :data="publicData.fund" :type="'fund'"></public-chart>
-		</div>
-		<div v-else-if="currentType === '2'">
-			<public-chart :title="'信托产品发行时间'" :data="publicData.trust" :type="'trust'"></public-chart>
-		</div>
-	</div>
+      <public-chart
+        :title="'私募产品发行时间'"
+        :data="publicData.fund"
+        :type="'fund'"
+      ></public-chart>
+    </div>
+    <div v-else-if="currentType === '2'">
+      <public-chart
+        :title="'信托产品发行时间'"
+        :data="publicData.trust"
+        :type="'trust'"
+      ></public-chart>
+    </div>
+  </div>
 </template>
 
 <script>
-import publicChart from './public-chart';
-import apis from '../../../api/common';
+import publicChart from "./public-chart";
+import apis from "../../../api/common";
 
 export default {
   components: {
-		publicChart
+    publicChart
   },
-	data() {
-		return {
-			activeType: 1, // 混合模式时选中的type
-			publicData: {}
-		}
-	},
-	computed: {
-		currentType() {
-			return this.$route.query.type || '3';
+  data() {
+    return {
+      activeType: 1, // 混合模式时选中的type
+      publicData: {}
+    };
+  },
+  computed: {
+    currentType() {
+      return this.$route.query.type == "9"
+        ? "1"
+        : this.$route.query.type || "3";
     },
-		administratorId() {
+    administratorId() {
       return this.$route.params.administratorId;
+    }
+  },
+  created() {
+    this.fetchInfoByYear();
+  },
+  methods: {
+    changeType(type) {
+      this.activeType = type;
+      this.fetchInfoByYear();
     },
-	},
-	created() {
-		this.fetchInfoByYear();
-	},
-	methods: {
-		changeType(type) {
-			this.activeType = type;
-			this.fetchInfoByYear()
-		},
 
-		async fetchInfoByYear() {
-			try {
-				let params = { administratorId: this.administratorId };
-				const res = await apis.getInfoByYear(params);
-				this.publicData = res.data;
-			} catch(err) {
-				console.error(err);
-			}
-		}
-	}
-}
+    async fetchInfoByYear() {
+      try {
+        let params = { administratorId: this.administratorId };
+        const res = await apis.getInfoByYear(params);
+        this.publicData = res.data;
+      } catch (err) {
+        console.error(err);
+      }
+    }
+  }
+};
 </script>
 
 <style lang="stylus" scoped>

@@ -29,7 +29,7 @@ import '@quasar/extras/animate/slideInUp.css'
 import '@quasar/extras/animate/slideOutDown.css'
 
 
-// We load Quasar stylesheet file
+// We load Quasar stylus files
 import 'quasar/dist/quasar.styl'
 
 
@@ -68,6 +68,14 @@ import qboot_Bootamap from 'boot/amap'
 
 
 
+Vue.config.devtools = true
+Vue.config.productionTip = false
+
+
+
+console.info('[Quasar] Running SPA.')
+
+
 
 const { app, store, router } = createApp()
 
@@ -75,16 +83,8 @@ const { app, store, router } = createApp()
 
 async function start () {
   
-  let routeUnchanged = true
-  const redirect = url => {
-    routeUnchanged = false
-    window.location.href = url
-  }
-
-  const urlPath = window.location.href.replace(window.location.origin, '')
   const bootFiles = [qboot_Booti18n,qboot_Bootaxios,qboot_Bootplugins,qboot_Bootecharts,qboot_Bootwebview,qboot_Bootmindmap,qboot_Bootgallery,qboot_Bootamap]
-
-  for (let i = 0; routeUnchanged === true && i < bootFiles.length; i++) {
+  for (let i = 0; i < bootFiles.length; i++) {
     if (typeof bootFiles[i] !== 'function') {
       continue
     }
@@ -95,9 +95,7 @@ async function start () {
         router,
         store,
         Vue,
-        ssrContext: null,
-        redirect,
-        urlPath
+        ssrContext: null
       })
     }
     catch (err) {
@@ -109,10 +107,6 @@ async function start () {
       console.error('[Quasar] boot error:', err)
       return
     }
-  }
-
-  if (routeUnchanged === false) {
-    return
   }
   
 

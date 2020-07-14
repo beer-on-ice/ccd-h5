@@ -71,7 +71,7 @@
     <section
       class="phone-select"
       v-show="phoneListVisible"
-      @click="hidePhoneList"
+      @click="isShare ? goRelatePage : hidePhoneList"
     >
       <div class="wrapper">
         <h3>拨打电话</h3>
@@ -87,24 +87,29 @@
         </div>
       </div>
     </section>
+    <down-mask ref="downMask"></down-mask>
   </div>
 </template>
 
 <script>
+import DownMask from "./../../components/downMask/";
 import counselorHead from "./components/counselor-head";
 import discribeCard from "components/discribe-card";
 import listTree from "./components/list-tree";
 import schoolListTree from "./components/school-list-tree";
 import cardList from "./components/card";
 import apis from "../../api/common";
+import jumpInfoMixin from "../../mixins/jumpInfoMixin"; // 引入mixin文件
 
 export default {
+  mixins: [jumpInfoMixin],
   components: {
     counselorHead,
     discribeCard,
     schoolListTree,
     listTree,
-    cardList
+    cardList,
+    DownMask
   },
   data() {
     return {
@@ -114,24 +119,27 @@ export default {
       workExpList: [],
       phoneListVisible: false,
       isAndroid: false,
-      isIOS: false
+      isIOS: false,
+      isShare: false
     };
   },
   created() {
     const {
       $route: {
         params: { id },
-        query: { type }
+        query: { type, share }
       }
     } = this;
     this.id = id;
     this.type = type;
+    this.isShare = Number(share);
   },
   mounted() {
     this._calcCardWidth();
     this.fetchCounselorDetail();
     this.fetchWorkExperience();
     this._judgeClient();
+    if (this.isShare) this.deleteShare();
   },
   methods: {
     async fetchCounselorDetail() {
@@ -353,6 +361,14 @@ export default {
       } else {
         return "PC";
       }
+    },
+    deleteShare() {
+      let cur = document.querySelector("div[class='mobLink-wrapper']");
+      cur.remove();
+    },
+    goRelatePage() {
+      if (this.isShare) this.$refs.downMask.show();
+      this.gengerateJumpInfo();
     }
   }
 };

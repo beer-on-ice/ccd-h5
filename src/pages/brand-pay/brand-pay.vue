@@ -8,13 +8,13 @@
           :src="info.workAddressUrl"
           alt="工作地点"
         />
-        <img v-else :src="defaultBgUrl" alt="BG" />
+        <img v-else src="./img/bg.png" alt="BG" />
       </div>
       <div class="head-content">
         <div class="head-logo">
           <div class="logo">
             <img v-if="info.logoUrl" :src="info.logoUrl" alt="LOGO" />
-            <img v-else :src="defaultLogoUrl" alt="LOGO" />
+            <img v-else src="./img/defaultLogo.png" alt="LOGO" />
           </div>
           <div class="logo-title">
             <span>{{ info.brandName }}</span>
@@ -28,30 +28,34 @@
     </section>
     <section class="relate">
       <h2>关联方</h2>
-      <ul class="relate-tab">
+      <ul :class="['relate-tab', hasArrLen > 1 ? 'hasMore' : '']">
         <li
           v-for="(item, index) in relateMenu"
-          :key="item"
+          :hidden="!item.arr.length"
+          :key="item.id"
           :class="{ 'li-active': typeCurrent === index + 1 }"
-          @click="() => (typeCurrent = index + 1)"
+          @click="switchRelate(index)"
         >
-          {{ item }}
+          {{ item.name }}
         </li>
       </ul>
-      <ul class="relate-tab-content" v-if="relateCompanyArr.length">
-        <li v-for="item in relateCompanyArr" :key="item.companyUrl">
+      <ul class="relate-tab-content">
+        <li
+          v-for="item in relateMenu[typeCurrent - 1].arr"
+          :key="item.companyUrl"
+          @click="goRelatePage(item)"
+        >
           {{ item.companyName }}
           <!-- <i class="iconfont iconright1"></i> -->
         </li>
       </ul>
-      <p class="relate-no-content" v-else>暂无此类关联方</p>
     </section>
     <section class="brand-tab">
       <ul>
         <li
           v-if="info.descList && info.descList.length"
           :class="{ 'li-active': currentTab === 1 }"
-          @click="() => (this.currentTab = 1)"
+          @click="switchImg(1)"
         >
           大事记
         </li>
@@ -59,7 +63,7 @@
         <li
           v-if="info.environmentUrlList && info.environmentUrlList.length"
           :class="{ 'li-active': currentTab === 2 }"
-          @click="() => (this.currentTab = 2)"
+          @click="switchImg(2)"
         >
           环境
         </li>
@@ -71,18 +75,38 @@
         <img-show :listData="info.environmentUrlList"></img-show>
       </div>
     </section>
+    <!-- <div class="adBanner" v-show="isShare">
+      <div class="left">
+        <img src="./img/logo.png" alt="logo" />
+      </div>
+      <div class="right" @click="show()">
+        下载APP
+      </div>
+    </div> -->
+    <oDialog ref="orderDialog"></oDialog>
+    <div class="mask" v-if="showMask" @click="showMask = false">
+      <!-- <div>
+        <p>点击右下角打开财查到APP</p>
+        <p>查看更多内容</p>
+      </div> -->
+
+      <img src="./img/down.png" alt="" />
+    </div>
   </li>
 </template>
 
 <script>
+import oDialog from "./components/o-dialog";
 import discribeCard from "components/discribe-card";
 import hugeEvent from "components/huge-event";
 import imgShow from "components/img-show";
 import apis from "../../api/common";
+import jumpInfoMixin from "../../mixins/jumpInfoMixin"; // 引入mixin文件
 
-const relateMenu = ["私募管理人", "信托", "银行", "保险"];
 export default {
+  mixins: [jumpInfoMixin],
   components: {
+    oDialog,
     discribeCard,
     hugeEvent,
     imgShow
@@ -91,47 +115,55 @@ export default {
     return {
       id: "",
       type: "",
+      isShare: false,
       info: {},
-      defaultLogoUrl: require("./img/defaultLogo.png"),
-      defaultBgUrl: require("./img/bg.png"),
       currentTab: 1, // 1大事记 2环境
       typeCurrent: 1,
-      relateMenu
+      showMask: false,
+      hasArrLen: 0,
+      relateMenu: [
+        {
+          id: 1,
+          name: "私募管理人",
+          arr: []
+        },
+        {
+          id: 2,
+          name: "信托",
+          arr: []
+        },
+        {
+          id: 3,
+          name: "银行",
+          arr: []
+        },
+        {
+          id: 4,
+          name: "保险",
+          arr: []
+        },
+        {
+          id: 5,
+          name: "证券",
+          arr: []
+        }
+      ]
     };
   },
   created() {
     const {
       $route: {
         params: { id },
-        query: { type }
+        query: { type, share }
       }
     } = this;
     this.id = id;
     this.type = type;
+    this.isShare = Number(share);
   },
   mounted() {
     this.fetchBrandShow();
-  },
-  computed: {
-    relateCompanyArr() {
-      if (!this.info.companyList) return [];
-      let arr = [...this.info.companyList];
-      arr = arr.filter(item => {
-        switch (this.typeCurrent) {
-          case 1:
-            return +item.type === 1 || +item.type === null;
-          case 2:
-            return +item.type === 2 || +item.type === 3;
-          case 3:
-            return +item.type === 4 || +item.type === 6;
-          case 4:
-            return +item.type === 5 || +item.type === 7;
-          default:
-            return +item.type === 1;
-        }
-      });
-      return arr;
-    }
+    if (this.isShare) this.generateShare();
   },
   methods: {
     async fetchBrandShow() {
@@ -141,7 +173,8 @@ export default {
         handleLogoUrl,
         handleWorkAddressUrl,
         handleEnvironmentUrl,
-        handleEventListTime
+        handleEventListTime,
+        handleCompanyArr
       } = this;
       try {
         let res;
@@ -153,16 +186,40 @@ export default {
         const { code, data, msg } = res;
         if (code === 200) {
           this.info = data;
+          document.title = `${data.brandName}品牌详情`;
           handleLogoUrl(this.info);
           handleWorkAddressUrl(this.info);
           handleEnvironmentUrl(this.info);
           handleEventListTime(this.info);
+          handleCompanyArr(this.info);
         } else {
           throw new Error(msg);
         }
       } catch ({ message }) {
         console.error(message);
       }
+    },
+    handleCompanyArr({ companyList }) {
+      let arr = [...companyList];
+      arr.forEach(item => {
+        if (+item.type === 1 || +item.type === null) {
+          this.relateMenu[0].arr.push(item);
+        } else if (+item.type === 2 || +item.type === 3) {
+          this.relateMenu[1].arr.push(item);
+        } else if (+item.type === 4 || +item.type === 6) {
+          this.relateMenu[2].arr.push(item);
+        } else if (+item.type === 5 || +item.type === 7) {
+          this.relateMenu[3].arr.push(item);
+        } else if (+item.type === 8 || +item.type === 9) {
+          this.relateMenu[4].arr.push(item);
+        }
+      });
+      this.relateMenu.map((item, index) => {
+        if (item.arr.length) {
+          ++this.hasArrLen;
+          return (this.typeCurrent = index + 1);
+        }
+      });
     },
     handleLogoUrl({ logoUrl }) {
       if (logoUrl !== "") {
@@ -196,8 +253,22 @@ export default {
         this.currentTab = 2;
       }
     },
-    goRelatePage(companyUrl) {
-      console.log(companyUrl);
+    show() {
+      this.$refs.orderDialog.show();
+    },
+    switchImg(tab) {
+      this.currentTab = tab;
+    },
+    switchRelate(index) {
+      // if (this.isShare) {
+      //   this.showMask = true;
+      //   return;
+      // }
+      this.typeCurrent = index + 1;
+    },
+    goRelatePage({ companyUrl, type, administratorId }) {
+      if (this.isShare) this.showMask = true;
+      this.gengerateJumpInfo(companyUrl, type, administratorId);
     }
   }
 };
